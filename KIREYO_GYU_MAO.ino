@@ -1,7 +1,7 @@
 //MOTORES
 const int pwma = 3;
-const int ML_A = 5;
-const int ML_B = 4;
+const int ML_A = 4;
+const int ML_B = 5;
 const int pwmb = 9;
 const int MR_A = 8;
 const int MR_B = 7;
@@ -12,7 +12,7 @@ const int fizq = 12;
 const int fcent = 11;
 const int der = A4;
 const int izq = A5;
-const int lin1 = 13;
+const int lin1 = A2;
 const int REMOTE = 0;
 
 //SENSORES LECTURAS
@@ -51,7 +51,7 @@ void loop() {
 
   while (digitalRead(REMOTE) == 1) {
 
-    lineval = digitalRead(lin1);
+    lineval = !digitalRead(lin1);
     SensVal = SensValor();
     Serial.println(SensVal);
 
@@ -60,7 +60,7 @@ void loop() {
         switch (SensVal) {
 
           case 0:
-            adelante(60);
+            adelante(150);
             Serial.println("Adelante");
             delay(50);
             break;
@@ -108,6 +108,19 @@ void loop() {
             delay(50);
             break;
 
+            case 14:
+            adelante(255);
+            Serial.println("Todos centro");
+            delay(50);
+            break;
+
+            case 16:
+            izquierda(255);
+            Serial.println("Izquierdo");
+            delay(50);
+            break;
+
+
             case 18:
             adelante(250);
             Serial.println("Todos adelante");
@@ -134,15 +147,16 @@ void loop() {
 
         break;
     }
+    break;
   }
   detenido(200);
 }
 
 
 void adelante(int velocity) {
-  analogWrite(ML_A, 1);
+  digitalWrite(ML_A, 1);
   digitalWrite(ML_B, 0);
-  analogWrite(MR_A, 1);
+  digitalWrite(MR_A, 1);
   digitalWrite(MR_B, 0);
 
   analogWrite(pwma, velocity);
@@ -187,11 +201,11 @@ void detenido(int velocity) {
 
 
 byte SensValor() {
-  byte sder = !digitalRead(der);
+  byte sder = digitalRead(der);
   byte sfder = !digitalRead(fder) * 2;
-  byte sfcen = !digitalRead(fcent) * 4;
+  byte sfcen = digitalRead(fcent) * 4;
   byte sfizq = !digitalRead(fizq) * 8;
-  byte sizq = !digitalRead(izq) * 16;
+  byte sizq = digitalRead(izq) * 16;
 
   byte SumaTotal = sizq + sfizq + sfder + sder + sfcen;
   return SumaTotal;
